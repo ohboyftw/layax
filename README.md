@@ -129,19 +129,22 @@ text are identical across engines for each seed.
 
 | engine | Banking77 passed | Banking77 coverage | MASSIVE-en passed | MASSIVE-en coverage |
 |---|---|---|---|---|
-| layax | 3 of 3 | 0.897, 0.833, 0.883 | 3 of 3 | 0.773, 0.802, 0.738 |
-| classifier on Laya encoder | 1 of 3 | 0.899, 0.872, 0.928 | 2 of 3 | 0.770, 0.843, 0.713 |
-| FastFit | 2 of 3 | 0.978, 0.837, 0.885 | 0 of 3 | none, 0.685, none |
+| layax | 5 of 5 | 0.897, 0.833, 0.883, 0.867, 0.870 | 5 of 5 | 0.773, 0.802, 0.738, 0.676, 0.781 |
+| classifier on Laya encoder | 3 of 5 | 0.899, 0.872, 0.928, 0.860, 0.861 | 4 of 5 | 0.770, 0.843, 0.713, 0.699, 0.743 |
+| FastFit | 4 of 5 | 0.978, 0.837, 0.885, 0.830, 0.935 | 0 of 5 | none, 0.685, none, 0.341, none |
 
-- Coverage is listed for seeds 17, 18 and 19 whether or not the seed passed. "none" means
-  no threshold met the target at coverage 0.3 or more.
-- The classifier's failures are narrow (for example realised 0.0497 against a bound of
-  0.0488), and layax's own Banking77 seed 17 passed by less than one error. The three
-  seeds share most of their test rows. Read the classifier gap as close to noise.
-- FastFit's failures are not narrow, and match its worse error ranking above.
-- The layax Banking77 rows use three trainings with the publication settings, separate
-  from the runs in the accuracy table. CLINC150 was not certified, because its gate
-  fails on the traffic shift described above whatever the engine.
+- Seeds are 17 to 21, in that order. Coverage is listed whether or not the seed passed.
+  "none" means no threshold met the target at coverage 0.3 or more.
+- Over 10 runs, layax passed all 10, the classifier 7 and FastFit 4.
+- The classifier's three failures are narrow (for example realised 0.0497 against a bound
+  of 0.0488), and at seeds 20 and 21 its coverage was level with layax's. The seeds share
+  most of their test rows, so they are not independent trials. Read this as layax being
+  the most reliable engine here, not as a large gap to the classifier.
+- FastFit's MASSIVE-en failures are not narrow, and match its worse error ranking above.
+- The layax Banking77 rows for seeds 17 to 19 come from separate trainings with the same
+  settings as the publication runs. Seeds 20 and 21 are publication runs. CLINC150 was
+  not certified, because its gate fails on the traffic shift described above whatever
+  the engine.
 
 ### CPU latency
 
