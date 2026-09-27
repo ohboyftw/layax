@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "layax"
+version = "0.1.0"
+description = "Late-interaction option heads and a Learn-then-Test abstention gate for Laya decision models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+urls = { Source = "https://github.com/ohboyftw/layax" }
+dependencies = [
+    "torch>=2.1",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+# Loading a published layax checkpoint and predicting.
+inference = [
+    "transformers>=4.48",
+    "safetensors>=0.4",
+    "huggingface_hub>=0.25",
+]
+# Everything needed to load a Laya checkpoint and train. scipy gives the exact
+# Clopper-Pearson bound in the gate (a normal approximation is used without it).
+train = [
+    "layax[inference]",
+    "datasets>=2.19",
+    "laya>=0.3.5",
+    "scipy>=1.11",
+]
+modal = ["modal>=0.64"]
+# External publication baselines (layax/baselines_ext.py). fast-fit 1.2.1 needs transformers < 5.
+baselines = [
+    "transformers>=4.48,<5",
+    "sentence-transformers>=3,<6",
+    "setfit==1.2.0",
+    "fast-fit==1.2.1",
+]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["layax*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+runs/
+*.zip
+.venv/
+*.egg-info/
+.env
+.beacon/
+.codegraph/
+.deepeval/
+build/
+.claude/worktrees/

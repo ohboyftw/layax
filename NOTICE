@@ -1,0 +1,38 @@
+layax
+Copyright 2026 Aravind
+
+This product includes software derived in part from Laya
+(https://github.com/NandhaKishorM/laya), Copyright Convai Innovations,
+licensed under the Apache License, Version 2.0.
+
+Specifically, layax reimplements or adapts the following from Laya:
+  - the typed-decision question schema (choice / score / noul) and option rendering
+  - the strictly-proper-scoring-rule reward (log + spherical + RPS), in layax/losses.py
+  - the per-(question type, option count) temperature bucketing and clamp behaviour
+  - the ECE binning, so reported calibration numbers are comparable
+
+Model weights
+
+The published layax checkpoints are derivative works of the Laya model
+convaiinnovations/laya (Apache License 2.0), which is itself built on
+answerdotai/ModernBERT-large (Apache License 2.0). The weights were modified by
+fine-tuning the encoder and adding new late-interaction projection layers. The
+checkpoints are distributed under the Apache License 2.0.
+
+Training and evaluation data
+
+The published checkpoints were trained and evaluated on the datasets below. The
+data was modified: it was split into train, competence, calibration and test
+subsets, and label names were rendered as option text (underscores and colons
+replaced with spaces). No dataset is redistributed with layax.
+
+  - Banking77, PolyAI, CC BY 4.0.
+    Casanueva et al. 2020, "Efficient Intent Detection with Dual Sentence Encoders".
+    Loaded from the mteb/banking77 mirror. That mirror carries an MIT tag, which
+    should not be relied on. The original dataset license is CC BY 4.0.
+  - CLINC150 (clinc/clinc_oos, "plus" configuration), CC BY 3.0.
+    Larson et al. 2019, "An Evaluation Dataset for Intent Classification and
+    Out-of-Scope Prediction".
+  - MASSIVE (AmazonScience/massive, en-US locale), Amazon, CC BY 4.0.
+    FitzGerald et al. 2022, "MASSIVE: A 1M-Example Multilingual Natural Language
+    Understanding Dataset with 51 Typologically-Diverse Languages".
