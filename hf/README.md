@@ -119,6 +119,11 @@ The runs used `modal run --detach scripts/modal_app.py::seeds` for layax and
 - FastFit, a smaller model, is as accurate or more accurate on all three datasets. It ranks
   its own errors worse (AURC about twice layax's on MASSIVE-en and CLINC150), so it gives
   less safe coverage under an abstention gate. See the source README.
+- Under a Learn-then-Test certificate (5% risk, 5 seeds, Banking77 and MASSIVE-en), layax
+  passed 10 of 10 runs, a fine-tuned classifier 7 of 10 and FastFit 4 of 10. The
+  classifier's failures were narrow and the seeds share most test rows, so read this as
+  layax being the most reliable engine here, not as a large gap. Details are in the
+  [source README](https://github.com/ohboyftw/layax#certification-across-engines).
 - The `abstain` gate on the CLINC150 checkpoint does not meet its target. It was set for a
   selective risk of 0.05 but gave 0.098 to 0.119 on test. The calibration rows were 1.4%
   to 2.0% out of scope and the test rows were 17% to 19%. On Banking77 and MASSIVE-en the
