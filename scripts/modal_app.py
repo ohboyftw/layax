@@ -73,8 +73,23 @@ def _with_source(img: modal.Image) -> modal.Image:
             .add_local_dir(os.path.join(HERE, "configs"), remote_path="/root/configs"))
 
 
+# GLiNER2.5-Decide, zero-shot: the versions the local CPU check ran with. gliner2 declares
+# none of its model dependencies, so transformers/peft/safetensors are listed by hand.
+gliner_image = modal.Image.debian_slim(python_version="3.11").pip_install(
+    "torch==2.14.0",
+    "transformers==5.17.0",
+    "peft==0.21.1",
+    "safetensors==0.8.0",
+    "huggingface_hub==1.33.0",
+    "datasets==5.0.1",
+    "numpy>=1.24",
+    "scipy>=1.11",
+    "gliner2==2.0.0",
+).env({"HF_HOME": "/cache/hf", "TOKENIZERS_PARALLELISM": "false", "PYTHONIOENCODING": "utf-8"})
+
 image = _with_source(image)
 baseline_image = _with_source(baseline_image)
+gliner_image = _with_source(gliner_image)
 
 app = modal.App(APP_NAME, image=image)
 cache_vol = modal.Volume.from_name("layax-cache", create_if_missing=True)
@@ -852,6 +867,40 @@ def baseline_replay(engine: str = "fastfit",
             c["name"] = "%s-ep%d-s%d" % (base["name"], epochs, s)
             cfgs.append(c)
     for m in baseline_replay_one.map(cfgs, kwargs={"engine": engine}):
+        print(json.dumps({"run": m["engine"]["run"], "T": m["engine"]["temperature"],
+                          "counts": m["counts"]}))
+
+
+@app.function(image=gliner_image, gpu="A10G", timeout=2 * 60 * 60, volumes=VOLUMES,
+              secrets=HF_SECRET)
+def gliner_replay_one(config: dict) -> dict:
+    """Score GLiNER2.5-Decide zero-shot on one config's splits; write /runs/<name>-gliner."""
+    sys.path.insert(0, "/root")
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    from layax.config import RunConfig
+    from layax.gliner_replay import run_gliner_replay
+
+    cfg = RunConfig.from_dict(config)
+    manifest = run_gliner_replay(cfg, os.path.join("/runs", cfg.name + "-gliner"), "cuda")
+    runs_vol.commit()
+    return manifest
+
+
+@app.local_entrypoint()
+def gliner_replay(configs: str = "configs/banking77_pub.json,configs/massive_en_pub.json",
+                  seed_list: str = "17,18,19,20,21", epochs: int = 5):
+    """Same names and splits as ``baseline_replay``; epochs only fixes the run name."""
+    cfgs = []
+    for path in configs.split(","):
+        with open(path) as f:
+            base = json.load(f)
+        for s in (int(x) for x in seed_list.split(",")):
+            c = json.loads(json.dumps(base))
+            c["li"].update({"epochs": epochs, "seed": s})
+            c["name"] = "%s-ep%d-s%d" % (base["name"], epochs, s)
+            cfgs.append(c)
+    for m in gliner_replay_one.map(cfgs):
         print(json.dumps({"run": m["engine"]["run"], "T": m["engine"]["temperature"],
                           "counts": m["counts"]}))
 
